@@ -1,27 +1,41 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para ejercicios
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de ejercicios
+// Simulación de datos
 const exercises = [
-  { id: 1, name: "Press banca", description: "Ejercicio de fuerza para el pecho", category: "fuerza", muscle_group: "pecho" },
-  { id: 2, name: "Correr", description: "Ejercicio cardiovascular", category: "cardio", muscle_group: "piernas" }
+  { id: 1, name: "Sentadillas", category: "fuerza" },
+  { id: 2, name: "Correr", category: "cardio" },
+  { id: 3, name: "Flexiones", category: "fuerza" }
 ];
 
-// GET /v1/exercises -> lista todos los ejercicios
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: exercises });
+// GET ejercicios con filtro por categoría
+router.get("/", (req, res) => {
+  const { category } = req.query;
+
+  let result = exercises;
+
+  if (category) {
+    result = exercises.filter(e => e.category === category);
+  }
+
+  res.json(result);
 });
 
-// GET /v1/exercises/:id -> obtiene un ejercicio por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
+// GET ejercicio por ID con validación
+router.get("/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "El ID debe ser numérico" });
+  }
+
   const exercise = exercises.find(e => e.id === id);
 
   if (!exercise) {
-    return res.status(404).json({ error: true, message: 'Ejercicio no encontrado' });
+    return res.status(404).json({ error: "Ejercicio no encontrado" });
   }
 
-  res.status(200).json({ success: true, data: exercise });
+  res.json(exercise);
 });
 
 module.exports = router;

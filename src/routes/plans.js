@@ -1,27 +1,44 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para planes de entrenamiento
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de planes de entrenamiento
+// Simulación de datos
 const plans = [
-  { id: 201, user_id: 1, exercises: [{ exercise_id: 1, sets: 4, reps: 12, weight: 40 }], notes: "Plan inicial de fuerza" },
-  { id: 202, user_id: 2, exercises: [{ exercise_id: 2, sets: 3, reps: 20, weight: null }], notes: "Plan de cardio" }
+  { id: 1, user_id: 1, name: "Plan fuerza", status: "activo" },
+  { id: 2, user_id: 1, name: "Plan cardio", status: "inactivo" },
+  { id: 3, user_id: 2, name: "Plan mixto", status: "activo" }
 ];
 
-// GET /v1/plans -> lista todos los planes
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: plans });
+// GET todos los planes con filtro opcional por user_id o status
+router.get("/", (req, res) => {
+  const { user_id, status } = req.query;
+  let result = plans;
+
+  if (user_id) {
+    result = result.filter(p => p.user_id === parseInt(user_id));
+  }
+
+  if (status) {
+    result = result.filter(p => p.status === status);
+  }
+
+  res.json(result);
 });
 
-// GET /v1/plans/:id -> obtiene un plan por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
+// GET plan por ID
+router.get("/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "El ID debe ser numérico" });
+  }
+
   const plan = plans.find(p => p.id === id);
 
   if (!plan) {
-    return res.status(404).json({ error: true, message: 'Plan no encontrado' });
+    return res.status(404).json({ error: "Plan no encontrado" });
   }
 
-  res.status(200).json({ success: true, data: plan });
+  res.json(plan);
 });
 
 module.exports = router;

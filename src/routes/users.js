@@ -1,30 +1,41 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para usuarios
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de usuarios (mock data)
+// Simulación de datos
 const users = [
-  { id: 1, name: "Santiago", email: "santi@example.com", role: "user", registered_at: "2025-09-13" },
-  { id: 2, name: "Ana", email: "ana@example.com", role: "admin", registered_at: "2025-09-10" }
+  { id: 1, name: "Santiago", role: "admin" },
+  { id: 2, name: "Estefa", role: "user" },
+  { id: 3, name: "Andrés", role: "user" }
 ];
 
-// GET /v1/users -> lista todos los usuarios
-router.get('/', (req, res) => {
-  // respondemos con el array completo en formato JSON
-  res.status(200).json({ success: true, data: users });
-});
+// GET todos los usuarios con filtro opcional por rol
+router.get("/", (req, res) => {
+  const { role } = req.query;
 
-// GET /v1/users/:id -> obtiene un usuario por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id); // convertimos el parámetro a número
-  const user = users.find(u => u.id === id); // buscamos el usuario en el array
+  let result = users;
 
-  // si no se encuentra, devolvemos error 404
-  if (!user) {
-    return res.status(404).json({ error: true, message: 'Usuario no encontrado' });
+  if (role) {
+    result = users.filter(u => u.role === role);
   }
 
-  // si existe, devolvemos el usuario
-  res.status(200).json({ success: true, data: user });
+  res.json(result);
 });
 
-module.exports = router; // exportamos el router para usarlo en app.js
+// GET usuario por ID con validación
+router.get("/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "El ID debe ser numérico" });
+  }
+
+  const user = users.find(u => u.id === id);
+
+  if (!user) {
+    return res.status(404).json({ error: "Usuario no encontrado" });
+  }
+
+  res.json(user);
+});
+
+module.exports = router;
