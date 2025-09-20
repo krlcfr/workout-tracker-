@@ -5,7 +5,7 @@ const router = express.Router();
 const users = [
   { id: 1, name: "Santiago", role: "admin" },
   { id: 2, name: "Estefa", role: "user" },
-  { id: 3, name: "Andrés", role: "user" }
+  { id: 3, name: "Cris", role: "user" }
 ];
 
 // GET todos los usuarios con filtro opcional por rol
