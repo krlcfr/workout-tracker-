@@ -1,27 +1,36 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para reportes de progreso
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de reportes
+// Simulación de datos
 const reports = [
-  { id: 401, user_id: 1, generated_at: "2025-09-25", completed_workouts: 15, total_hours: 22, notes: "Mejora en fuerza" },
-  { id: 402, user_id: 2, generated_at: "2025-09-26", completed_workouts: 10, total_hours: 12, notes: "Avance en resistencia" }
+  { id: 1, user_id: 1, date: "2025-09-01", progress: "Buen avance" },
+  { id: 2, user_id: 2, date: "2025-09-15", progress: "Inicio de plan" }
 ];
 
-// GET /v1/reports -> lista todos los reportes
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: reports });
+// GET headers demo
+router.get("/headers", (req, res) => {
+  const client = req.get("User-Agent") || "no especificado";
+  res.json({ "User-Agent recibido": client });
 });
 
-// GET /v1/reports/:id -> obtiene un reporte por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const report = reports.find(r => r.id === id);
+// POST reporte con req.body
+router.post("/", (req, res) => {
+  const { user_id, date, progress } = req.body;
 
-  if (!report) {
-    return res.status(404).json({ error: true, message: 'Reporte no encontrado' });
+  if (!user_id || !date || !progress) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
-  res.status(200).json({ success: true, data: report });
+  const newReport = {
+    id: reports.length + 1,
+    user_id: parseInt(user_id),
+    date,
+    progress
+  };
+
+  reports.push(newReport);
+
+  res.status(201).json(newReport);
 });
 
 module.exports = router;

@@ -1,30 +1,38 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para usuarios
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de usuarios (mock data)
+// Simulación de usuarios
 const users = [
-  { id: 1, name: "Santiago", email: "santi@example.com", role: "user", registered_at: "2025-09-13" },
-  { id: 2, name: "Ana", email: "ana@example.com", role: "admin", registered_at: "2025-09-10" }
+  { id: 1, name: "Santiago", role: "admin" },
+  { id: 2, name: "Estefa", role: "user" }
 ];
 
-// GET /v1/users -> lista todos los usuarios
-router.get('/', (req, res) => {
-  // respondemos con el array completo en formato JSON
-  res.status(200).json({ success: true, data: users });
+// GET headers demo
+router.get("/headers", (req, res) => {
+  // Leer cabecera Content-Type
+  const contentType = req.get("Content-Type") || "no especificado";
+  res.json({ "Content-Type recibido": contentType });
 });
 
-// GET /v1/users/:id -> obtiene un usuario por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id); // convertimos el parámetro a número
-  const user = users.find(u => u.id === id); // buscamos el usuario en el array
+// POST usuario con req.body
+router.post("/", (req, res) => {
+  const { name, role } = req.body;
 
-  // si no se encuentra, devolvemos error 404
-  if (!user) {
-    return res.status(404).json({ error: true, message: 'Usuario no encontrado' });
+  // Validación básica
+  if (!name || !role) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
-  // si existe, devolvemos el usuario
-  res.status(200).json({ success: true, data: user });
+  const newUser = {
+    id: users.length + 1,
+    name,
+    role
+  };
+
+  users.push(newUser);
+
+  // Responder con 201 Created
+  res.status(201).json(newUser);
 });
 
-module.exports = router; // exportamos el router para usarlo en app.js
+module.exports = router;
