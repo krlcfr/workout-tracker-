@@ -27,3 +27,8 @@ app.listen(port, () => {
 
 app.use(express.json()); // Permite trabajar con JSON en req.body
 
+
+// Para procesar datos de formularios (x-www-form-urlencoded)
+app.use(express.urlencoded({ extended: true }));
+
+

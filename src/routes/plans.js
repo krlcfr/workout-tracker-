@@ -1,27 +1,36 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para planes de entrenamiento
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de planes de entrenamiento
+// Simulación de datos
 const plans = [
-  { id: 201, user_id: 1, exercises: [{ exercise_id: 1, sets: 4, reps: 12, weight: 40 }], notes: "Plan inicial de fuerza" },
-  { id: 202, user_id: 2, exercises: [{ exercise_id: 2, sets: 3, reps: 20, weight: null }], notes: "Plan de cardio" }
+  { id: 1, user_id: 1, name: "Plan fuerza", status: "activo" },
+  { id: 2, user_id: 2, name: "Plan cardio", status: "pendiente" }
 ];
 
-// GET /v1/plans -> lista todos los planes
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: plans });
+// GET headers demo
+router.get("/headers", (req, res) => {
+  const contentType = req.get("Content-Type") || "no especificado";
+  res.json({ "Content-Type recibido": contentType });
 });
 
-// GET /v1/plans/:id -> obtiene un plan por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const plan = plans.find(p => p.id === id);
+// POST plan con req.body
+router.post("/", (req, res) => {
+  const { user_id, name, status } = req.body;
 
-  if (!plan) {
-    return res.status(404).json({ error: true, message: 'Plan no encontrado' });
+  if (!user_id || !name || !status) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
-  res.status(200).json({ success: true, data: plan });
+  const newPlan = {
+    id: plans.length + 1,
+    user_id: parseInt(user_id),
+    name,
+    status
+  };
+
+  plans.push(newPlan);
+
+  res.status(201).json(newPlan);
 });
 
 module.exports = router;

@@ -1,27 +1,36 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para ejercicios
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de ejercicios
+// Simulación de ejercicios
 const exercises = [
-  { id: 1, name: "Press banca", description: "Ejercicio de fuerza para el pecho", category: "fuerza", muscle_group: "pecho" },
-  { id: 2, name: "Correr", description: "Ejercicio cardiovascular", category: "cardio", muscle_group: "piernas" }
+  { id: 1, name: "Sentadillas", category: "fuerza" },
+  { id: 2, name: "Correr", category: "cardio" }
 ];
 
-// GET /v1/exercises -> lista todos los ejercicios
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: exercises });
+// GET headers demo
+router.get("/headers", (req, res) => {
+  // Leer cabecera Authorization
+  const auth = req.get("Authorization") || "sin token";
+  res.json({ "Authorization recibido": auth });
 });
 
-// GET /v1/exercises/:id -> obtiene un ejercicio por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const exercise = exercises.find(e => e.id === id);
+// POST ejercicio con req.body
+router.post("/", (req, res) => {
+  const { name, category } = req.body;
 
-  if (!exercise) {
-    return res.status(404).json({ error: true, message: 'Ejercicio no encontrado' });
+  if (!name || !category) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
-  res.status(200).json({ success: true, data: exercise });
+  const newExercise = {
+    id: exercises.length + 1,
+    name,
+    category
+  };
+
+  exercises.push(newExercise);
+
+  res.status(201).json(newExercise);
 });
 
 module.exports = router;
