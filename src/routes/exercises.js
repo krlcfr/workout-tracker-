@@ -2,44 +2,49 @@ const express = require("express");
 const router = express.Router();
 const { sendSuccess, sendError } = require("../helpers/apiResponse");
 
+
 const exercises = [
   { id: 1, name: "Sentadillas", category: "fuerza" },
   { id: 2, name: "Correr", category: "cardio" }
 ];
 
-// GET todos los ejercicios
+// GET listar todos
 router.get("/", (req, res) => {
-  try {
-    return sendSuccess(res, exercises, 200);
-  } catch (err) {
-    return sendError(res, 500, "Error al obtener ejercicios", "INTERNAL_ERROR");
-  }
+  return sendSuccess(res, exercises);
 });
 
 // GET ejercicio por ID
 router.get("/:id", (req, res) => {
-  try {
-    const exercise = exercises.find(e => e.id === parseInt(req.params.id));
-    if (!exercise) return sendError(res, 404, "Ejercicio no encontrado", "EXERCISE_NOT_FOUND");
-    return sendSuccess(res, exercise, 200);
-  } catch (err) {
-    return sendError(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
-  }
+  const exercise = exercises.find(e => e.id === parseInt(req.params.id));
+  if (!exercise) return sendError(res, "Ejercicio no encontrado", 404);
+  return sendSuccess(res, exercise);
 });
 
-// POST ejercicio
+// POST crear ejercicio
 router.post("/", (req, res) => {
-  try {
-    const { name, category } = req.body;
-    if (!name || !category) return sendError(res, 400, "Faltan campos obligatorios", "VALIDATION_ERROR");
+  const { name, category } = req.body;
 
-    const newExercise = { id: exercises.length + 1, name, category };
-    exercises.push(newExercise);
-
-    return sendSuccess(res, newExercise, 201);
-  } catch (err) {
-    return sendError(res, 500, "Error al crear ejercicio", "INTERNAL_ERROR");
+  if (!name || !category) {
+    return sendError(res, "Faltan campos obligatorios", 400);
   }
+
+  const newExercise = {
+    id: exercises.length + 1,
+    name,
+    category
+  };
+
+  exercises.push(newExercise);
+  return sendSuccess(res, newExercise, 201);
+});
+
+// GET cabeceras demo
+router.get("/headers-demo", (req, res) => {
+  const auth = req.get("Authorization") || "no enviada";
+  res.set("X-Powered-By", "WorkoutTrackerAPI");
+  res.json({
+    "Authorization recibido": auth
+  });
 });
 
 module.exports = router;
