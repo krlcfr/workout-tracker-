@@ -1,27 +1,45 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para entrenamientos programados
+const express = require("express");
+const router = express.Router();
+const { sendSuccess, sendError } = require("../helpers/apiResponse");
 
-// Datos simulados de entrenamientos programados
 const schedules = [
-  { id: 301, plan_id: 201, scheduled_date: "2025-09-20", scheduled_time: "07:30", status: "pendiente" },
-  { id: 302, plan_id: 202, scheduled_date: "2025-09-21", scheduled_time: "18:00", status: "completado" }
+  { id: 1, plan_id: 1, date: "2025-09-20", status: "pendiente" },
+  { id: 2, plan_id: 1, date: "2025-09-21", status: "completado" }
 ];
 
-// GET /v1/schedules -> lista todos los entrenamientos programados
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: schedules });
+// GET todos los schedules
+router.get("/", (req, res) => {
+  try {
+    return sendSuccess(res, schedules, 200);
+  } catch (err) {
+    return sendError(res, 500, "Error al obtener schedules", "INTERNAL_ERROR");
+  }
 });
 
-// GET /v1/schedules/:id -> obtiene un entrenamiento programado por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const schedule = schedules.find(s => s.id === id);
-
-  if (!schedule) {
-    return res.status(404).json({ error: true, message: 'Entrenamiento no encontrado' });
+// GET schedule por ID
+router.get("/:id", (req, res) => {
+  try {
+    const schedule = schedules.find(s => s.id === parseInt(req.params.id));
+    if (!schedule) return sendError(res, 404, "Schedule no encontrado", "SCHEDULE_NOT_FOUND");
+    return sendSuccess(res, schedule, 200);
+  } catch (err) {
+    return sendError(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
   }
+});
 
-  res.status(200).json({ success: true, data: schedule });
+// POST schedule
+router.post("/", (req, res) => {
+  try {
+    const { plan_id, date, status } = req.body;
+    if (!plan_id || !date || !status) return sendError(res, 400, "Faltan campos obligatorios", "VALIDATION_ERROR");
+
+    const newSchedule = { id: schedules.length + 1, plan_id: parseInt(plan_id), date, status };
+    schedules.push(newSchedule);
+
+    return sendSuccess(res, newSchedule, 201);
+  } catch (err) {
+    return sendError(res, 500, "Error al crear schedule", "INTERNAL_ERROR");
+  }
 });
 
 module.exports = router;
