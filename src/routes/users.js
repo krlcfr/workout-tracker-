@@ -1,30 +1,59 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para usuarios
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de usuarios (mock data)
+// Simulación de usuarios
 const users = [
-  { id: 1, name: "Santiago", email: "santi@example.com", role: "user", registered_at: "2025-09-13" },
-  { id: 2, name: "Ana", email: "ana@example.com", role: "admin", registered_at: "2025-09-10" }
+  { id: 1, name: "Santiago", role: "admin" },
+  { id: 2, name: "Estefa", role: "user" }
 ];
 
-// GET /v1/users -> lista todos los usuarios
-router.get('/', (req, res) => {
-  // respondemos con el array completo en formato JSON
-  res.status(200).json({ success: true, data: users });
+// GET todos los usuarios
+router.get("/", (req, res) => {
+  res.json(users);
 });
 
-// GET /v1/users/:id -> obtiene un usuario por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id); // convertimos el parámetro a número
-  const user = users.find(u => u.id === id); // buscamos el usuario en el array
+// GET headers
+router.get("/headers", (req, res) => {
+  const contentType = req.get("Content-Type") || "no especificado";
+  res.json({ "Content-Type recibido": contentType });
+});
 
-  // si no se encuentra, devolvemos error 404
+// GET headers demo
+router.get("/headers-demo", (req, res) => {
+  const contentType = req.get("Content-Type") || "no especificado";
+  const apiKey = req.get("X-API-Key") || "no enviada";
+
+  res.set("X-Powered-By", "WorkoutTrackerAPI");
+  res.json({
+    "Content-Type recibido": contentType,
+    "X-API-Key recibido": apiKey
+  });
+});
+
+// GET usuario por ID
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const user = users.find(u => u.id === parseInt(id));
+
   if (!user) {
-    return res.status(404).json({ error: true, message: 'Usuario no encontrado' });
+    return res.status(404).json({ error: "Usuario no encontrado" });
   }
 
-  // si existe, devolvemos el usuario
-  res.status(200).json({ success: true, data: user });
+  res.json(user);
 });
 
-module.exports = router; // exportamos el router para usarlo en app.js
+// POST usuario
+router.post("/", (req, res) => {
+  const { name, role } = req.body;
+
+  if (!name || !role) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
+  }
+
+  const newUser = { id: users.length + 1, name, role };
+  users.push(newUser);
+
+  res.status(201).json(newUser);
+});
+
+module.exports = router;

@@ -1,27 +1,51 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para planes de entrenamiento
+const express = require("express");
+const router = express.Router();
 
-// Datos simulados de planes de entrenamiento
 const plans = [
-  { id: 201, user_id: 1, exercises: [{ exercise_id: 1, sets: 4, reps: 12, weight: 40 }], notes: "Plan inicial de fuerza" },
-  { id: 202, user_id: 2, exercises: [{ exercise_id: 2, sets: 3, reps: 20, weight: null }], notes: "Plan de cardio" }
+  { id: 1, user_id: 1, name: "Plan fuerza", status: "activo" },
+  { id: 2, user_id: 2, name: "Plan cardio", status: "pendiente" }
 ];
 
-// GET /v1/plans -> lista todos los planes
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: plans });
+// GET todos los planes
+router.get("/", (req, res) => {
+  res.json(plans);
 });
 
-// GET /v1/plans/:id -> obtiene un plan por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const plan = plans.find(p => p.id === id);
+// GET headers demo
+router.get("/headers-demo", (req, res) => {
+  const client = req.get("User-Agent") || "no especificado";
+
+  res.set("X-App-Version", "1.0.0");
+  res.json({
+    "User-Agent recibido": client,
+    mensaje: "Cabeceras de planes configuradas"
+  });
+});
+
+// GET plan por ID
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const plan = plans.find(p => p.id === parseInt(id));
 
   if (!plan) {
-    return res.status(404).json({ error: true, message: 'Plan no encontrado' });
+    return res.status(404).json({ error: "Plan no encontrado" });
   }
 
-  res.status(200).json({ success: true, data: plan });
+  res.json(plan);
+});
+
+// POST plan
+router.post("/", (req, res) => {
+  const { user_id, name, status } = req.body;
+
+  if (!user_id || !name || !status) {
+    return res.status(400).json({ error: "Faltan campos obligatorios" });
+  }
+
+  const newPlan = { id: plans.length + 1, user_id: parseInt(user_id), name, status };
+  plans.push(newPlan);
+
+  res.status(201).json(newPlan);
 });
 
 module.exports = router;
