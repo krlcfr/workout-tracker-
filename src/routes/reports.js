@@ -1,27 +1,45 @@
-const express = require('express');
-const router = express.Router(); // creamos el router para reportes de progreso
+const express = require("express");
+const router = express.Router();
+const { sendSuccess, sendError } = require("../helpers/apiResponse");
 
-// Datos simulados de reportes
 const reports = [
-  { id: 401, user_id: 1, generated_at: "2025-09-25", completed_workouts: 15, total_hours: 22, notes: "Mejora en fuerza" },
-  { id: 402, user_id: 2, generated_at: "2025-09-26", completed_workouts: 10, total_hours: 12, notes: "Avance en resistencia" }
+  { id: 1, user_id: 1, date: "2025-09-01", progress: "Buen avance" },
+  { id: 2, user_id: 2, date: "2025-09-15", progress: "Inicio de plan" }
 ];
 
-// GET /v1/reports -> lista todos los reportes
-router.get('/', (req, res) => {
-  res.status(200).json({ success: true, data: reports });
+// GET todos los reports
+router.get("/", (req, res) => {
+  try {
+    return sendSuccess(res, reports, 200);
+  } catch (err) {
+    return sendError(res, 500, "Error al obtener reports", "INTERNAL_ERROR");
+  }
 });
 
-// GET /v1/reports/:id -> obtiene un reporte por ID
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const report = reports.find(r => r.id === id);
-
-  if (!report) {
-    return res.status(404).json({ error: true, message: 'Reporte no encontrado' });
+// GET report por ID
+router.get("/:id", (req, res) => {
+  try {
+    const report = reports.find(r => r.id === parseInt(req.params.id));
+    if (!report) return sendError(res, 404, "Reporte no encontrado", "REPORT_NOT_FOUND");
+    return sendSuccess(res, report, 200);
+  } catch (err) {
+    return sendError(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
   }
+});
 
-  res.status(200).json({ success: true, data: report });
+// POST reporte
+router.post("/", (req, res) => {
+  try {
+    const { user_id, date, progress } = req.body;
+    if (!user_id || !date || !progress) return sendError(res, 400, "Faltan campos obligatorios", "VALIDATION_ERROR");
+
+    const newReport = { id: reports.length + 1, user_id: parseInt(user_id), date, progress };
+    reports.push(newReport);
+
+    return sendSuccess(res, newReport, 201);
+  } catch (err) {
+    return sendError(res, 500, "Error al crear reporte", "INTERNAL_ERROR");
+  }
 });
 
 module.exports = router;
