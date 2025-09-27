@@ -29,7 +29,7 @@ const getUserById = (req, res) => {
   return sendSuccess(res, user, "Usuario encontrado");
 };
 
-// POST crear usuario
+// Metodo POST
 const createUser = (req, res) => {
   const { name, role } = req.body;
   if (!name || !role) return sendError(res, "Faltan campos obligatorios", 400);
@@ -40,8 +40,23 @@ const createUser = (req, res) => {
   return sendSuccess(res, newUser, "Usuario creado", 201);
 };
 
+// MetodoPUT
+
+const updateUser = (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, role } = req.body;
+  const index = users.findIndex(u => u.id === id);
+
+  if (index === -1) return sendError(res, "Usuario no encontrado", 404);
+  if (!name || !role) return sendError(res, "Faltan campos obligatorios", 400);
+
+  users[index] = { id, name, role };
+  return sendSuccess(res, users[index], "Usuario actualizado");
+};
+
 module.exports = {
   getUsers,
   getUserById,
-  createUser
+  createUser,
+  updateUser
 }
