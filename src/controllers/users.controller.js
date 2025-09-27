@@ -29,7 +29,19 @@ const getUserById = (req, res) => {
   return sendSuccess(res, user, "Usuario encontrado");
 };
 
+// POST crear usuario
+const createUser = (req, res) => {
+  const { name, role } = req.body;
+  if (!name || !role) return sendError(res, "Faltan campos obligatorios", 400);
+
+  const newUser = { id: users.length + 1, name, role };
+  users.push(newUser);
+
+  return sendSuccess(res, newUser, "Usuario creado", 201);
+};
+
 module.exports = {
   getUsers,
-  getUserById
+  getUserById,
+  createUser
 }
