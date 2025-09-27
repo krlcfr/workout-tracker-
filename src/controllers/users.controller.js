@@ -40,7 +40,7 @@ const createUser = (req, res) => {
   return sendSuccess(res, newUser, "Usuario creado", 201);
 };
 
-// MetodoPUT
+// Metodo PUT
 
 const updateUser = (req, res) => {
   const id = parseInt(req.params.id);
@@ -54,9 +54,24 @@ const updateUser = (req, res) => {
   return sendSuccess(res, users[index], "Usuario actualizado");
 };
 
+// Metodo PATCH
+const patchUser = (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, role } = req.body;
+  const user = users.find(u => u.id === id);
+
+  if (!user) return sendError(res, "Usuario no encontrado", 404);
+
+  if (name) user.name = name;
+  if (role) user.role = role;
+
+  return sendSuccess(res, user, "Usuario actualizado parcialmente");
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
-  updateUser
+  updateUser,
+  patchUser
 }
