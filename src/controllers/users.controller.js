@@ -68,10 +68,22 @@ const patchUser = (req, res) => {
   return sendSuccess(res, user, "Usuario actualizado parcialmente");
 };
 
+// DELETE usuario
+const deleteUser = (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = users.findIndex(u => u.id === id);
+
+  if (index === -1) return sendError(res, "Usuario no encontrado", 404);
+
+  users.splice(index, 1);
+  return sendSuccess(res, null, "Usuario eliminado", 204);
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
-  patchUser
+  patchUser,
+  deleteUser
 }
