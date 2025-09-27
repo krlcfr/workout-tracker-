@@ -2,6 +2,7 @@ const express = require("express");
 const { port } = require("./config/env");
 const routes = require("./routes");
 
+
 const app = express();
 
 // Middlewares globales
@@ -20,3 +21,7 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
+
+module.exports = app;
+
