@@ -1,16 +1,8 @@
-// Archivo barril de rutas v1
 const express = require("express");
-const usersRoutes = require("./users.routes");
-
 const router = express.Router();
 
-// Agregamos el módulo de users
-router.use("/users", usersRoutes);
+const usersRoutes = require("./users.routes");
 
-// Aquí más adelante añadiremos otros módulos:
-// router.use("/exercises", exercisesRoutes);
-// router.use("/plans", plansRoutes);
-// router.use("/schedules", schedulesRoutes);
-// router.use("/reports", reportsRoutes);
+router.use("/users", usersRoutes);
 
 module.exports = router;
