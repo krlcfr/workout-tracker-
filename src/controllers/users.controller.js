@@ -1,5 +1,5 @@
 const { sendSuccess, sendError } = require("../helpers/apiResponse");
-const { users } = require("../database/db");
+const { users } = require("../database/bd"); // 👈 ojo, aquí corriges
 
 // GET: listar usuarios con filtro de búsqueda
 const getUsers = (req, res) => {
@@ -14,7 +14,7 @@ const getUsers = (req, res) => {
     );
   }
 
-  return sendSuccess(res, filtered, "Usuarios obtenidos correctamente");
+  return sendSuccess(res, filtered, "Usuarios obtenidos correctamente", 200);
 };
 
 // GET: usuario por id
@@ -24,7 +24,7 @@ const getUserById = (req, res) => {
 
   if (!user) return sendError(res, "Usuario no encontrado", 404);
 
-  return sendSuccess(res, user, "Usuario encontrado");
+  return sendSuccess(res, user, "Usuario encontrado", 200);
 };
 
 // POST: crear usuario
@@ -38,7 +38,7 @@ const createUser = (req, res) => {
     id: users.length + 1,
     name,
     email,
-    password, // En un caso real se debería encriptar
+    password,
     registered_at: new Date().toISOString().split("T")[0]
   };
 
@@ -66,7 +66,7 @@ const updateUser = (req, res) => {
     registered_at: users[index].registered_at
   };
 
-  return sendSuccess(res, users[index], "Usuario actualizado");
+  return sendSuccess(res, users[index], "Usuario actualizado", 200);
 };
 
 // PATCH: actualización parcial
@@ -81,7 +81,7 @@ const patchUser = (req, res) => {
   if (email) user.email = email;
   if (password) user.password = password;
 
-  return sendSuccess(res, user, "Usuario actualizado parcialmente");
+  return sendSuccess(res, user, "Usuario actualizado parcialmente", 200);
 };
 
 // DELETE: eliminar usuario
@@ -91,8 +91,9 @@ const deleteUser = (req, res) => {
 
   if (index === -1) return sendError(res, "Usuario no encontrado", 404);
 
+  const deletedUser = users[index];
   users.splice(index, 1);
-  return sendSuccess(res, null, "Usuario eliminado", 204);
+  return sendSuccess(res, deletedUser, "Usuario eliminado", 200);
 };
 
 module.exports = {
