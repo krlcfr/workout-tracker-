@@ -1,5 +1,5 @@
 const { sendSuccess, sendError } = require("../helpers/apiResponse");
-const { users } = require("../database/bd"); // 👈 ojo, aquí corriges
+const { users } = require("../database/db");
 
 // GET: listar usuarios con filtro de búsqueda
 const getUsers = (req, res) => {
