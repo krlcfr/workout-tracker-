@@ -1,22 +1,16 @@
 const express = require("express");
-const { port } = require("./config/env"); // Puerto desde variables de entorno
-const routes = require("./routes"); // Importamos el index de routes
-
 const app = express();
+const { port } = require("./config/env");
 
-// Middlewares globales
+const routes = require("./routes");
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use("/", routes);
 
-// Rutas principales (se delega al index de routes)
-app.use("/v1", routes);
-
-// Ruta base de prueba
 app.get("/", (req, res) => {
-  res.send("Workout Tracker API corriendo 🚀");
+  res.send("API funcionando 🚀");
 });
 
-// Inicialización del servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
