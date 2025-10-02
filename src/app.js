@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas principales (se delega al index de routes)
-app.use("/v1", routes);
+app.use("/", routes);
 
 // Ruta base de prueba
 app.get("/", (req, res) => {
