@@ -1,19 +1,21 @@
 // Respuesta exitosa
-function sendSuccess(res, data, status = 200) {
-  return res.status(status).json({
+const sendSuccess = (res, data, message = "Operación exitosa", status = 200) => {
+  res.status(status).json({
     success: true,
-    code: status,
-    data
+    message,
+    data,
   });
-}
+};
 
-// Respuesta con error
-function sendError(res, status = 500, message = "Error interno del servidor", code = "INTERNAL_ERROR") {
-  return res.status(status).json({
+// Respuesta de error
+const sendError = (res, message = "Error interno del servidor", status = 500) => {
+  res.status(status).json({
     success: false,
-    code,
-    error: message
+    error: message,
   });
-}
+};
 
-module.exports = { sendSuccess, sendError };
+module.exports = {
+  sendSuccess,
+  sendError,
+};

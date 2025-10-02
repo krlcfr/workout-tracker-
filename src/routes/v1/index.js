@@ -1,13 +1,10 @@
-// Archivo barril de rutas v1
-// de momento vacío o listo para exportar después
+const express = require("express");
+const router = express.Router();
 
-// Ejemplo:
-// const usersRoutes = require("./users.routes");
 
-module.exports = {
-  // usersRoutes,
-  // exercisesRoutes,
-  // plansRoutes,
-  // schedulesRoutes,
-  // reportsRoutes,
-};
+const plansRoutes = require("./plans.routes");
+
+
+router.use("/plans", plansRoutes);
+
+module.exports = router;
