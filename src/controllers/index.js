@@ -1,14 +1,6 @@
 // Archivo barril para controladores
-
-//de momento vacío o listo para exportar después
-
-// Ejemplo:
-// const usersController = require("./users.controller");
+const schedulesController = require("./schedules.controller");
 
 module.exports = {
-  // usersController,
-  // exercisesController,
-  // plansController,
-  // schedulesController,
-  // reportsController,
+  schedulesController,
 };
